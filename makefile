@@ -18,7 +18,7 @@ $(PROGRAM): $(CPP_FILES) $(H_FILES) libStanfordCPPLib.a
 	$(CXX) -o $(PROGRAM) $(CXXFLAGS) $(LDOPTIONS) $(CPP_FILES) $(LIB)
 
 libStanfordCPPLib.a:
-	@rm -f libStanfordCPPLib.a
+	@del -f libStanfordCPPLib.a
 	(cd StanfordCPPLib; make -f makefile-for-judge all)
 	ln -s StanfordCPPLib/libStanfordCPPLib.a .
 
@@ -27,7 +27,7 @@ spl.jar:
 
 tidy:
 	(cd StanfordCPPLib; make -f makefile-for-judge clean)
-	rm -f ,* .,* *~ core a.out *.err
+	del -f ,* .,* *~ core a.out *.err
 
 clean scratch: tidy
-	rm -f *.o *.a $(PROGRAM) spl.jar score
+	del -f *.o *.a $(PROGRAM) spl.jar score
