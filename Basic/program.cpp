@@ -47,6 +47,7 @@ Statement *Program::getParsedStatement(int lineNumber) {
 }
 
 int Program::getFirstLineNumber() {
+	if(program.end()==program.begin())return -1;
    return program.begin()->first;     // Replace this stub with your own code
 }
 

@@ -369,12 +369,10 @@ void processLine(string line, Program & program, EvalState & state) {
 			   
 			   
 			   if(then_pos==line.npos){
-					cout<<1<<endl;
 					throw 1;
 			   }				   
 			   int w=-1;
 			   if(l1==line.npos&&l2==line.npos&&l3==line.npos){
-				   cout<<2<<endl;
 				   throw 1;
 			   }
 			   if(l1!=line.npos)w=l1;else if(l2!=line.npos)w=l2;else w=l3;
