@@ -82,6 +82,8 @@ int main() {
  */
 string BasicString[20]={"","RUN","LIST","CLEAR","QUIT","HELP"};
 string ProgramString[20]={"REM","LET","PRINT","INPUT","END","GOTO","IF","THEN"};
+string keywords[20]={"RUN","LIST","CLEAR","QUIT","HELP","REM","LET","PRINT","INPUT","END","GOTO","IF","THEN"};
+
 //判断BasicString 
 bool check(string now, string s){
 	int k=0;
@@ -237,6 +239,19 @@ bool check_con(string a){
    }
    return 1;
 }
+bool check_keywords(TokenScanner scanner,int g=0){
+	while(true){
+		string tmp=scanner.nextToken();
+		for(int i=0;i<=12;i++){
+			if(keywords[i]=="THEN"&&g==1){
+				g=0;continue;
+			}
+			if(keywords[i]==tmp)throw "error";
+		}
+		if(tmp=="")break;
+	}
+	return 1;
+}
 void processLine(string line, Program & program, EvalState & state) {
    TokenScanner scanner;
    scanner.ignoreWhitespace();
@@ -260,6 +275,7 @@ void processLine(string line, Program & program, EvalState & state) {
 	   Expression* exp=nullptr;
 	   if(check(tmp=scanner.nextToken(),"PRINT")&&!flag){//PRINT
 			try{
+				check_keywords(scanner);
 				flag=1;
 				exp = parseExp(scanner);
 				int value = exp->eval(state);
@@ -283,8 +299,9 @@ void processLine(string line, Program & program, EvalState & state) {
 	   
 	   if(check(tmp,"LET")&&!flag){
 		   try {
+			   check_keywords(scanner);
 			   flag=1;
-			   exp=parseExp(scanner);  
+			   exp=parseExp(scanner); 
 			   exp->eval(state);
 			   if(exp!=nullptr)delete exp;exp=nullptr;
 		   }
@@ -303,6 +320,7 @@ void processLine(string line, Program & program, EvalState & state) {
 	   }
 	   if(check(tmp,"INPUT")&&!flag){
 		   try {
+				check_keywords(scanner);
 				exp=parseExp(scanner);
 			   if(exp->getType()!=IDENTIFIER)throw 1;
 			   
@@ -322,9 +340,9 @@ void processLine(string line, Program & program, EvalState & state) {
 	   }
 	   
 	   if(!flag){
-		   printf("2SYNTAX ERROR\n");
+		   printf("SYNTAX ERROR\n");
 		}
-	
+		return;
    }
    else {
 	   string tmp;
@@ -337,31 +355,39 @@ void processLine(string line, Program & program, EvalState & state) {
 	   Expression* exp=nullptr;
 	   try{
 		   if(check(tmp,"LET")){
+			   check_keywords(scanner);
 			   exp=parseExp(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"PRINT")){
+			   check_keywords(scanner);
 			   exp=parseExp(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"INPUT")){
+			   check_keywords(scanner);
 			   exp=parseExp(scanner);
 				if(exp->getType()!=IDENTIFIER)throw 1;
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"REM")){
+			   check_keywords(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"END")){
+			   check_keywords(scanner);
 			   if(scanner.nextToken()!="")throw 1;
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"GOTO")){
+			   check_keywords(scanner);
 			   exp=parseExp(scanner);
 			   if(exp->getType()!=CONSTANT)throw 1;
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"IF")){
+			   check_keywords(scanner,1);
+			   
 			   int then_pos=line.find("THEN");
 			   int IF_pos=line.find("IF");
 			   int l1=line.find('<'),l2=line.find('='),l3=line.find('>');
