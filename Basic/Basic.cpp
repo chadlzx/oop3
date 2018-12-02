@@ -239,16 +239,22 @@ bool check_con(string a){
    }
    return 1;
 }
-bool check_keywords(TokenScanner scanner,int g=0){
+bool check_keywords(string line,int g=0){
+	TokenScanner scanner;
+    scanner.ignoreWhitespace();
+    scanner.scanNumbers();
+    scanner.setInput(line);
+	scanner.nextToken();
+	if(isdigit(line[0]))scanner.nextToken();
 	while(true){
 		string tmp=scanner.nextToken();
+		if(tmp=="")break;
 		for(int i=0;i<=12;i++){
 			if(keywords[i]=="THEN"&&g==1){
 				g=0;continue;
 			}
 			if(keywords[i]==tmp)throw "error";
 		}
-		if(tmp=="")break;
 	}
 	return 1;
 }
@@ -275,7 +281,7 @@ void processLine(string line, Program & program, EvalState & state) {
 	   Expression* exp=nullptr;
 	   if(check(tmp=scanner.nextToken(),"PRINT")&&!flag){//PRINT
 			try{
-				check_keywords(scanner);
+				check_keywords(line);
 				flag=1;
 				exp = parseExp(scanner);
 				int value = exp->eval(state);
@@ -296,31 +302,31 @@ void processLine(string line, Program & program, EvalState & state) {
 			if(exp!=nullptr)delete exp;exp=nullptr;
 			flag=1;
 	   }
-	   
 	   if(check(tmp,"LET")&&!flag){
-		   try {
-			   check_keywords(scanner);
+		  try {
+			   check_keywords(line);
 			   flag=1;
-			   exp=parseExp(scanner); 
+			   exp=parseExp(scanner);
 			   exp->eval(state);
 			   if(exp!=nullptr)delete exp;exp=nullptr;
 		   }
 			catch(int i){
-			if(i==1)printf("VARIABLE NOT DEFINED\n");
-			else if(i==2)printf("DIVIDE BY ZERO\n");
-			else if(i==3)printf("LINE NUMBER ERROR\n");
-			else printf("SYNTAX ERROR\n");
-			if(exp!=nullptr)delete exp;exp=nullptr;
+				if(i==1)printf("VARIABLE NOT DEFINED\n");
+				else if(i==2)printf("DIVIDE BY ZERO\n");
+				else if(i==3)printf("LINE NUMBER ERROR\n");
+				else printf("SYNTAX ERROR\n");
+				if(exp!=nullptr)delete exp;exp=nullptr;
 			}
 			catch(...){
 				printf("SYNTAX ERROR\n");
 				if(exp!=nullptr)delete exp;exp=nullptr;
 			}
-			if(exp!=nullptr)delete exp;exp=nullptr;flag=1;
+			if(exp!=nullptr)delete exp;exp=nullptr;
+			flag=1;
 	   }
 	   if(check(tmp,"INPUT")&&!flag){
 		   try {
-				check_keywords(scanner);
+				check_keywords(line);
 				exp=parseExp(scanner);
 			   if(exp->getType()!=IDENTIFIER)throw 1;
 			   
@@ -355,17 +361,17 @@ void processLine(string line, Program & program, EvalState & state) {
 	   Expression* exp=nullptr;
 	   try{
 		   if(check(tmp,"LET")){
-			   check_keywords(scanner);
+			   check_keywords(line);
 			   exp=parseExp(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"PRINT")){
-			   check_keywords(scanner);
+			   check_keywords(line);
 			   exp=parseExp(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"INPUT")){
-			   check_keywords(scanner);
+			   check_keywords(line);
 			   exp=parseExp(scanner);
 				if(exp->getType()!=IDENTIFIER)throw 1;
 			   program.addSourceLine(LineNumber,line);
@@ -374,18 +380,18 @@ void processLine(string line, Program & program, EvalState & state) {
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"END")){
-			   check_keywords(scanner);
+			   check_keywords(line);
 			   if(scanner.nextToken()!="")throw 1;
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"GOTO")){
-			   check_keywords(scanner);
+			   check_keywords(line);
 			   exp=parseExp(scanner);
 			   if(exp->getType()!=CONSTANT)throw 1;
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"IF")){
-			   check_keywords(scanner,1);
+			   check_keywords(line,1);
 			   
 			   int then_pos=line.find("THEN");
 			   int IF_pos=line.find("IF");
