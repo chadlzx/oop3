@@ -371,7 +371,6 @@ void processLine(string line, Program & program, EvalState & state) {
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"REM")){
-			   check_keywords(scanner);
 			   program.addSourceLine(LineNumber,line);
 		   }
 		   else if(check(tmp,"END")){
