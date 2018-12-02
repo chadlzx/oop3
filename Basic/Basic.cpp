@@ -205,13 +205,17 @@ void HELP(){
 	printf("And so shit!\n");
 	
 }
+
 void INPUT(string s,EvalState & state){
 	bool flag=1;
 	while(flag){
 		bool flag3=0;
 		cout<<" ? ";
 		string b=getLine();
-		for(int i=0;i<b.size();i++)if(!isdigit(b[i]))flag3=1;
+		for(int i=0;i<b.size();i++){
+			if(i==0&&b[0]=='-')continue;
+			if(!isdigit(b[i]))flag3=1;
+		}
 		if(flag3){
 			printf("INVALID NUMBER\n");
 			continue;
