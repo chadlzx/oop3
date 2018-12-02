@@ -206,9 +206,20 @@ void HELP(){
 	
 }
 void INPUT(string s,EvalState & state){
-	cout<<" ? ";
-	int a;a=stringToInteger(getLine());
-	state.setValue(s,a);
+	bool flag=1;
+	while(flag){
+		bool flag3=0;
+		cout<<" ? ";
+		string b=getLine();
+		for(int i=0;i<b.size();i++)if(!isdigit(b[i]))flag3=1;
+		if(flag3){
+			printf("INVALID NUMBER\n");
+			continue;
+		}
+		int a;a=stringToInteger(b);
+		state.setValue(s,a);
+		flag=0;
+	}
 }
 
 
@@ -279,10 +290,11 @@ void processLine(string line, Program & program, EvalState & state) {
 	   if(flag)return;
 	   string tmp;
 	   Expression* exp=nullptr;
+	   
 	   if(check(tmp=scanner.nextToken(),"PRINT")&&!flag){//PRINT
 			try{
-				check_keywords(line);
 				flag=1;
+				check_keywords(line);
 				exp = parseExp(scanner);
 				int value = exp->eval(state);
 				cout<<value<<endl;
@@ -314,6 +326,7 @@ void processLine(string line, Program & program, EvalState & state) {
 				if(i==1)printf("VARIABLE NOT DEFINED\n");
 				else if(i==2)printf("DIVIDE BY ZERO\n");
 				else if(i==3)printf("LINE NUMBER ERROR\n");
+				else if(i==4)printf("INVALID NUMBER\n");
 				else printf("SYNTAX ERROR\n");
 				if(exp!=nullptr)delete exp;exp=nullptr;
 			}
@@ -326,25 +339,36 @@ void processLine(string line, Program & program, EvalState & state) {
 	   }
 	   if(check(tmp,"INPUT")&&!flag){
 		   try {
+			   flag=1;
 				check_keywords(line);
 				exp=parseExp(scanner);
-			   if(exp->getType()!=IDENTIFIER)throw 1;
+			   if(exp->getType()!=IDENTIFIER)throw 5;
 			   
 			   TokenScanner sb;
 			   sb.ignoreWhitespace();
 			   sb.scanNumbers();
 			   sb.setInput(line);
 			   sb.nextToken();
+			   
 			   INPUT(sb.nextToken(),state);
+			  
 				if(exp!=nullptr)delete exp;exp=nullptr;
-				flag=1;
+				
 		   }
+			catch(int i){
+				if(i==1)printf("VARIABLE NOT DEFINED\n");
+				else if(i==2)printf("DIVIDE BY ZERO\n");
+				else if(i==3)printf("LINE NUMBER ERROR\n");
+				else if(i==4)printf("INVALID NUMBER\n");
+				else printf("SYNTAX ERROR\n");
+				if(exp!=nullptr)delete exp;exp=nullptr;
+			}
 			catch(...){
 				printf("SYNTAX ERROR\n");
 				if(exp!=nullptr)delete exp;exp=nullptr;
 			}
+			flag=1;
 	   }
-	   
 	   if(!flag){
 		   printf("SYNTAX ERROR\n");
 		}
