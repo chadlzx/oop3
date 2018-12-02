@@ -265,7 +265,7 @@ bool check_keywords(string line,int g=0){
 		string tmp=scanner.nextToken();
 		if(tmp=="")break;
 		for(int i=0;i<=12;i++){
-			if(keywords[i]=="THEN"&&g==1){
+			if(keywords[i]=="THEN"&&tmp=="THEN"&&g==1){
 				g=0;continue;
 			}
 			if(keywords[i]==tmp)throw "error";
@@ -426,10 +426,8 @@ void processLine(string line, Program & program, EvalState & state) {
 			   int l1=line.find('<'),l2=line.find('='),l3=line.find('>');
 			   
 			   
-			   
 			   if(then_pos==line.npos){
-					throw 1;
-			   }				   
+			   throw 1;	   }
 			   int w=-1;
 			   if(l1==line.npos&&l2==line.npos&&l3==line.npos){
 				   throw 1;
@@ -439,6 +437,8 @@ void processLine(string line, Program & program, EvalState & state) {
 			   string s1(line,IF_pos+2,w-IF_pos-3);
 			   string s2(line,w+1,then_pos-w-1);
 			   string s4(line,then_pos+4,line.size()-then_pos-4);
+			   
+			   
 			   
 			   /*cout<<s1<<endl;
 			   cout<<s2<<endl;
